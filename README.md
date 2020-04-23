@@ -65,20 +65,13 @@ This can all be applied at runtime through the existing API that the frontend us
 
 ## What is it for?
 
+### Configuration as YAML
+
+Treat your config as code. Check it into Git. Generate it from other systems. Apply it as part of a CI build and deploy pipeline.
+
 ### Configuration sharing
 
 Some configuration can now be done in the UI. It's hard to share this with the community because it's baked in to JSON files in .storage, and even if it was safe to share it's still hard to integrate as you are only supposed to edit it via the UI.
-
-### Configuration as YAML
-
-Home Assistant has endless conversations about two seemingly opposite ends of the configuration spectrum:
-
- * People who want to manage Home Assistant through the UI only, not with text editors.
- * People who want to configure Home Assistant like a traditional Unix daemon. With text editors.
-
-Right now there is a compromise (documented [here](https://github.com/home-assistant/architecture/blob/master/adr/0010-integration-configuration.md)).
-
-This is still not enough for some people who want to treat their configuration as code. It is not a satisfying user experience for them to use Git to manage UI based configuration as they have to version what is effectively an output of a deployment rather than an input to a deployment.
 
 ### Backup
 
@@ -90,6 +83,27 @@ It is **not** a replacement for a full backup. It does not contain any runtime s
 
 Howevever if you only ever configure Home Assistant using it, then it maybe a way to turn a blank Home Assistant install into something like the one that you lost.
 
+### Debugging
+
+In terms of reproducing a users problem, having a manifest might give clues into the state of their system.
+
+## Non-Functional Requirements
+
+### Declarative not imperative
+
+We are describing a target state, not a change we want to make. Exactly like an ordinary config file. This approach needs to be idempotent. This raises the bar for the code we need to write but makes it much safer for the end user. It unlocks stricter validation and more realistic dry runs.
+
+### Immediate visibility of changes
+
+We go through the API and apply changes to a running system. Changes are visible as quickly as they would be if made via the UI.
+
+### Secure
+We use the Home Assistant API, which is protected by access keys. We do not need access to the file system where the Home Assistant config lives. We do not need to run as a particular unix user. We can run from anywhere we can access the Home Assistant API (i.e. UI).
+
+### Safety
+
+We go through the API, so we can't apply config that the UI wouldn't allow. A bug in happier can only corrupt Home Assistant if the Home Assistant API also allows that bug. We aren't directly modifying files on disk, so we can't directly cause data or config loss.
+ 
 ## Concepts
 
 ### Selectors
@@ -101,4 +115,6 @@ Sometimes we can't predict what identifier a device or entity will be given, but
  * `device`: restricts a search using the device registry. For example, a device has a serial number and that is a fairly stable identifier.
  * `class`: this can be combined with `device` to find a particular entity within a device.
  
+ ## Contributing
  
+ All contributions must be under the same licence and terms as contribution to a Home Assistant component. They must also meet similiar code quality checks.
