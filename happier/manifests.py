@@ -1,20 +1,23 @@
 from .resources import Resource
 import yaml
+from .exceptions import ManifestError
+
 
 def load_manifests(connection, manifest):
     resources = []
     for record in yaml.safe_load_all(manifest):
         if not record:
-            # Ignore empty records
+            # Silently ignore empty records
             continue
 
         if "kind" not in record:
-            raise RuntimeError("Invalid manifest")
+            raise ManifestError("Manifest does not specify a 'kind' for a resource")
 
         resource_cls = Resource.class_for_kind(record["kind"])
         if not resource_cls:
-            raise RuntimeError("Invalid manifest")
+            raise ManifestError("Manifest specifies a 'kind' that is incorrect or not supported")
 
         resource = resource_cls(connection, record)
         resources.append(resource)
+
     return resources

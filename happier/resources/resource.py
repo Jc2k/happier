@@ -3,6 +3,7 @@ from jsonschema.validators import validator_for
 from .registry import Registry
 import asyncclick as click
 import json
+from happier.exceptions import ValidationError
 
 short_names = {}
 long_names = {}
@@ -44,7 +45,7 @@ class Resource:
 
     def __init__(self, connection, manifest):
         for error in self.validator.iter_errors(manifest):
-            raise RuntimeError(error)
+            raise ValidationError(error)
 
         self.connection = connection
         self.manifest = manifest

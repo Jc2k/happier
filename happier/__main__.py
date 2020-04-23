@@ -10,6 +10,7 @@ import asyncclick as click
 from .connection import Connection
 from .resources import Resource
 from .manifests import load_manifests
+from .exceptions import ApplicationError, ManifestError, HomeAssistantError
 
 logger = logging.getLogger(__name__)
 
@@ -99,4 +100,20 @@ async def delete(ctx, manifest):
 
 
 if __name__ == "__main__":
-    main(_anyio_backend="asyncio")
+    try:
+        main(_anyio_backend="asyncio")
+
+    except KeyboardInterrupt:
+        pass
+
+    except ManifestError as e:
+        click.secho("Exiting due to an error with the supplied manifest", fg="red")
+        click.echo(str(e))
+
+    except HomeAssistantError as e:
+        click.secho("Exiting due to an error communicating with the Home Assistant instance", fg="red")
+        click.echo(str(e))
+
+    except ApplicationError as e:
+        click.secho("Exiting due to an error", fg="red")
+        click.echo(str(e))
