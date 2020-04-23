@@ -2,8 +2,9 @@ import json
 import pathlib
 
 import asyncclick as click
-from happier.exceptions import ValidationError
 from jsonschema.validators import validator_for
+
+from happier.exceptions import ProgrammingError, ValidationError
 
 short_names = {}
 long_names = {}
@@ -20,19 +21,21 @@ class Resource:
         super().__init_subclass__(**kwargs)
 
         if not cls.kind:
-            raise RuntimeError(f"{cls} does not have a kind attribute set")
+            raise ProgrammingError(f"{cls} does not have a kind attribute set")
 
         if not cls.version:
-            raise RuntimeError(f"{cls} does not have a version attribute set")
+            raise ProgrammingError(f"{cls} does not have a version attribute set")
 
         if cls.kind in long_names:
-            raise RuntimeError(f"{cls} is a duplicate of resource kind {cls.kind}")
+            raise ProgrammingError(f"{cls} is a duplicate of resource kind {cls.kind}")
 
         long_names[cls.kind] = cls
 
         for short_name in cls.short_names:
             if short_name in short_names:
-                raise RuntimeError(f"{cls} is a duplicate of short name {short_name}")
+                raise ProgrammingError(
+                    f"{cls} is a duplicate of short name {short_name}"
+                )
 
             short_names[short_name] = cls
 

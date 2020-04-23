@@ -4,6 +4,8 @@ import ssl
 
 import asyncws
 
+from .exceptions import AuthenticationError, HomeAssistantError
+
 ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
 ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE
@@ -35,7 +37,7 @@ class Connection:
                     if not future:
                         continue
                     if not msg["success"]:
-                        future.set_exception(RuntimeError(msg["error"]))
+                        future.set_exception(HomeAssistantError(msg["error"]))
                     future.set_result(msg["result"])
                 else:
                     print(msg)
@@ -68,10 +70,10 @@ class Connection:
 
         msg = await self._recv()
         if msg["type"] == "auth_invalid":
-            raise RuntimeError("Invalid auth token")
+            raise AuthenticationError("Invalid auth token")
 
         if msg["type"] != "auth_ok":
-            raise RuntimeError("Unexpected message")
+            raise HomeAssistantError(f"Unexpected message: {msg!r}")
 
         self._dispatcher_task = asyncio.ensure_future(self._dispatcher())
 

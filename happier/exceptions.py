@@ -18,3 +18,7 @@ class HomeAssistantError(ApplicationError):
 class AuthenticationError(HomeAssistantError):
     def __init__(self):
         super().__init__("The provided authentication token was rejected")
+
+
+class ProgrammingError(ApplicationError):
+    pass
