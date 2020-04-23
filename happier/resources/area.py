@@ -1,5 +1,6 @@
-from .resource import Resource
 import asyncclick as click
+
+from .resource import Resource
 
 
 class Area(Resource):
@@ -21,12 +22,16 @@ class Area(Resource):
         return None
 
     async def create(self):
-        await self.connection.call("config/area_registry/create", name=self.manifest["name"])
+        await self.connection.call(
+            "config/area_registry/create", name=self.manifest["name"]
+        )
 
     async def delete(self):
         remote = await self.get_remote()
         if not remote:
             # Already deleted
             return
-        await self.connection.call("config/area_registry/delete", area_id=remote["area_id"])
+        await self.connection.call(
+            "config/area_registry/delete", area_id=remote["area_id"]
+        )
         click.secho(f"{self.kind}/{self.description} was deleted.", fg="green")

@@ -1,16 +1,12 @@
-import asyncio
-import ssl
-import json
 import logging
 
-import asyncws
-import confuse
 import asyncclick as click
+import confuse
 
 from .connection import Connection
-from .resources import Resource
+from .exceptions import ApplicationError, HomeAssistantError, ManifestError
 from .manifests import load_manifests
-from .exceptions import ApplicationError, ManifestError, HomeAssistantError
+from .resources import Resource
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +23,7 @@ async def get_connection(config):
 
 
 @click.group()
-@click.option('--debug/--no-debug', default=False)
+@click.option("--debug/--no-debug", default=False)
 @click.pass_context
 async def main(ctx, debug):
     if debug:
@@ -37,7 +33,7 @@ async def main(ctx, debug):
     logger.debug("Config directory is: %s", config.config_dir())
 
     ctx.ensure_object(dict)
-    ctx.obj['config'] = config
+    ctx.obj["config"] = config
 
 
 @main.command()
@@ -51,7 +47,7 @@ async def get(ctx, kind, name):
         click.secho(f"Unknown kind {kind!r}", fg="red")
         return
 
-    connection = await get_connection(ctx.obj['config'])
+    connection = await get_connection(ctx.obj["config"])
 
     try:
         area = resource_cls(connection, {})
@@ -68,11 +64,11 @@ async def get(ctx, kind, name):
 
 
 @main.command()
-@click.argument('manifest', type=click.File('r'))
+@click.argument("manifest", type=click.File("r"))
 @click.pass_context
 async def apply(ctx, manifest):
     """Apply a Home Assistant manifest"""
-    connection = await get_connection(ctx.obj['config'])
+    connection = await get_connection(ctx.obj["config"])
 
     resources = load_manifests(connection, manifest)
 
@@ -84,11 +80,11 @@ async def apply(ctx, manifest):
 
 
 @main.command()
-@click.argument('manifest', type=click.File('r'))
+@click.argument("manifest", type=click.File("r"))
 @click.pass_context
 async def delete(ctx, manifest):
     """Delete a Home Assistant resource"""
-    connection = await get_connection(ctx.obj['config'])
+    connection = await get_connection(ctx.obj["config"])
 
     resources = load_manifests(connection, manifest)
 
@@ -111,7 +107,10 @@ if __name__ == "__main__":
         click.echo(str(e))
 
     except HomeAssistantError as e:
-        click.secho("Exiting due to an error communicating with the Home Assistant instance", fg="red")
+        click.secho(
+            "Exiting due to an error communicating with the Home Assistant instance",
+            fg="red",
+        )
         click.echo(str(e))
 
     except ApplicationError as e:

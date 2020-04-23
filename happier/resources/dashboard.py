@@ -1,5 +1,6 @@
-from .resource import Resource
 import asyncclick as click
+
+from .resource import Resource
 
 
 class Dashboard(Resource):
@@ -21,7 +22,11 @@ class Dashboard(Resource):
         return None
 
     async def create(self):
-        await self.connection.call("lovelace/dashboards/create", title=self.manifest["title"], url_path=self.manifest["url_path"])
+        await self.connection.call(
+            "lovelace/dashboards/create",
+            title=self.manifest["title"],
+            url_path=self.manifest["url_path"],
+        )
         await self.update()
         click.secho(f"{self.kind}/{self.description} was created.", fg="green")
 
@@ -31,7 +36,9 @@ class Dashboard(Resource):
             "views": self.manifest["views"],
         }
 
-        await self.connection.call("lovelace/config/save", config=config, url_path=self.manifest["url_path"])
+        await self.connection.call(
+            "lovelace/config/save", config=config, url_path=self.manifest["url_path"]
+        )
 
         return True
 
@@ -45,5 +52,7 @@ class Dashboard(Resource):
             # Already deleted
             return
 
-        await self.connection.call("lovelace/dashboards/delete", dashboard_id=remote["id"])
+        await self.connection.call(
+            "lovelace/dashboards/delete", dashboard_id=remote["id"]
+        )
         click.secho(f"{self.kind}/{self.description} was deleted.", fg="green")

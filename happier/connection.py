@@ -1,6 +1,6 @@
 import asyncio
-import ssl
 import json
+import ssl
 
 import asyncws
 
@@ -8,8 +8,8 @@ ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
 ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE
 
-class Connection:
 
+class Connection:
     def __init__(self, address, port, access_token):
         self.address = address
         self.port = port
@@ -56,7 +56,9 @@ class Connection:
 
     async def connect(self):
         """Connect and authenticate against a WS instance."""
-        self._ws = await asyncws.connect(f'wss://{self.address}:{self.port}/api/websocket', ssl=ssl_context)
+        self._ws = await asyncws.connect(
+            f"wss://{self.address}:{self.port}/api/websocket", ssl=ssl_context
+        )
 
         # On connect HA will send auth_required. Can't do anything yet.
         msg = await self._recv()
@@ -76,4 +78,3 @@ class Connection:
     async def close(self):
         self._dispatcher_task.cancel()
         await self._dispatcher_task
-

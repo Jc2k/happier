@@ -1,12 +1,13 @@
-import pathlib
-from jsonschema.validators import validator_for
-from .registry import Registry
-import asyncclick as click
 import json
+import pathlib
+
+import asyncclick as click
 from happier.exceptions import ValidationError
+from jsonschema.validators import validator_for
 
 short_names = {}
 long_names = {}
+
 
 class Resource:
 

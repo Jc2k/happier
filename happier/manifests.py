@@ -1,6 +1,7 @@
-from .resources import Resource
 import yaml
+
 from .exceptions import ManifestError
+from .resources import Resource
 
 
 def load_manifests(connection, manifest):
@@ -15,7 +16,9 @@ def load_manifests(connection, manifest):
 
         resource_cls = Resource.class_for_kind(record["kind"])
         if not resource_cls:
-            raise ManifestError("Manifest specifies a 'kind' that is incorrect or not supported")
+            raise ManifestError(
+                "Manifest specifies a 'kind' that is incorrect or not supported"
+            )
 
         resource = resource_cls(connection, record)
         resources.append(resource)
