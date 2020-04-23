@@ -89,3 +89,16 @@ It is **not** a replacement for a full backup. It does not contain any runtime s
   * ...
 
 Howevever if you only ever configure Home Assistant using it, then it maybe a way to turn a blank Home Assistant install into something like the one that you lost.
+
+## Concepts
+
+### Selectors
+
+Sometimes we can't predict what identifier a device or entity will be given, but to be safe and idempotent we still need to be able to find the one that already exists. So we need selectors. We may need to combine multiple selectors to find a single object.
+
+ * `address`: Used when adding config entries - filter discoveries by IP address.
+ * `domain`: restricts a search by the domain of an integration - for example `hue`
+ * `device`: restricts a search using the device registry. For example, a device has a serial number and that is a fairly stable identifier.
+ * `class`: this can be combined with `device` to find a particular entity within a device.
+ 
+ 
