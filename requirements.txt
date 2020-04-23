@@ -1,5 +1,5 @@
 confuse
 asyncws
 pyyaml
-click
+asyncclick
 colorama

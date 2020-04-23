@@ -13,16 +13,6 @@ from .manifests import load_manifests
 
 logger = logging.getLogger(__name__)
 
-from functools import wraps
-
-def coro(f):
-    # Click doesn't support async properly, which is annoying
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        return asyncio.run(f(*args, **kwargs))
-
-    return wrapper
-
 
 async def get_connection(config):
     host = config["default"]["host"].get(str)
@@ -61,9 +51,12 @@ async def get(ctx, kind, name):
         return
 
     connection = await get_connection(ctx.obj['config'])
+
     try:
-        area = resource_cls(connection, name=name)
+        area = resource_cls(connection, {})
+
         state = await area.get_remote()
+
         if not state:
             click.secho(f"Object {type}/{name} could not be found", fg="red")
             return
