@@ -164,12 +164,12 @@ views:
     type: entities
     path: status
     entities:
-    - entity: sensor.landing_smoke_detector_battery
-    - entity: sensor.bedroom_radiator_battery
-    - entity: sensor.eve_motion_battery
-    - entity: sensor.landing_motion_battery
-    - entity: sensor.bunnywood_motion_battery
-    - entity: sensor.office_dimmer_battery
+    - entity: sensor.battery_1
+    - entity: sensor.battery_2
+    - entity: sensor.battery_3
+    - entity: sensor.battery_4
+    - entity: sensor.battery_5
+    - entity: sensor.battery_6
 ```
 
 You can run with:
