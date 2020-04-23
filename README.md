@@ -48,7 +48,6 @@ entities:
     state: on
     xy_color: [0.33, 0.66]
     brightness: 200
-EOF
 ---
 kind: Automation
 name: LivingRoomTempHot
@@ -59,6 +58,7 @@ trigger:
     entity_id: sensor.bunnywood_temperature
 action:
   - scene: Hot
+EOF
 ```
 
 This can all be applied at runtime through the existing API that the frontend uses. The changes will show up in the running system without having to bounce HA. The manifest is safe to apply multiple times - it is idempotent.
