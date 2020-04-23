@@ -87,6 +87,10 @@ Howevever if you only ever configure Home Assistant using it, then it maybe a wa
 
 In terms of reproducing a users problem, having a manifest might give clues into the state of their system.
 
+## Installation
+
+We are not even to the alpha stage yet so there isn't really anything to install unless you are a developer planning to contribute.
+
 ## Non-Functional Requirements
 
 ### Declarative not imperative
@@ -117,4 +121,59 @@ Sometimes we can't predict what identifier a device or entity will be given, but
  
  ## Contributing
  
- All contributions must be under the same licence and terms as contribution to a Home Assistant component. They must also meet similiar code quality checks.
+All contributions must be under the same licence and terms as contribution to a Home Assistant component. They must also meet similiar code quality checks.
+ 
+We target the same platforms and python versions as Home Assistant Core.
+
+You can build a dev environment with:
+ 
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+ 
+You need to make a config file with the connection details for your HA instance:
+ 
+```
+cat > ~/.config/happier/config.yaml <<EOF
+default:
+  host: ha.yourhost.co.uk
+  port: 443
+  access_token: 1234.abcd.abcedf-fffff_wwe
+  EOF
+```
+
+I've only tested with TLS turned on with a real certificate, so running without TLS probably won't work.
+
+You need a manifest to apply. At the moment only Area and Dashboard are working:
+
+```
+kind: Area
+version: v1alpha1
+name: Living Room Test
+---
+kind: Dashboard
+version: v1alpha1
+url_path: my-batteries
+title: My Batteries
+views:
+- title: System Status
+  cards:
+  - title: Battery Status
+    type: entities
+    path: status
+    entities:
+    - entity: sensor.landing_smoke_detector_battery
+    - entity: sensor.bedroom_radiator_battery
+    - entity: sensor.eve_motion_battery
+    - entity: sensor.landing_motion_battery
+    - entity: sensor.bunnywood_motion_battery
+    - entity: sensor.office_dimmer_battery
+```
+
+You can run with:
+
+```
+python -m happier apply mainfest.yaml
+```
