@@ -5,10 +5,9 @@ We are currently in the planning and prototyping stage
 
 ## What is it?
 
-A tool for managing Home Assistant configuration via Kubernetes inspired manifest files. These are simple yaml fragments, but we use the Home Assistant API to apply them at runtime. For example, lets pair a integration that is config entries based only, rename some of the entities it adds, set up a scene with one of the entities and then add an automation that triggers the scene:
+A tool for managing Home Assistant configuration via Kubernetes inspired manifest files. These are simple yaml fragments, but we use the Home Assistant API to apply them at runtime. For example, lets pair a integration that is config entries based only, rename some of the entities it adds, set up a scene with one of the entities and then add an automation that triggers the scene. You can have a manifest that looks like this:
 
-```bash
-happier apply -f - <<EOF
+```yaml
 kind: Integration
 selector:
   domain: homekit_controller
@@ -58,10 +57,16 @@ trigger:
     entity_id: sensor.bunnywood_temperature
 action:
   - scene: Hot
-EOF
+```
+
+and run it with:
+
+```bash
+happier apply manifest.yaml
 ```
 
 This can all be applied at runtime through the existing API that the frontend uses. The changes will show up in the running system without having to bounce HA. The manifest is safe to apply multiple times - it is idempotent.
+
 
 ## What is it for?
 
@@ -114,12 +119,22 @@ We go through the API, so we can't apply config that the UI wouldn't allow. A bu
 
 Sometimes we can't predict what identifier a device or entity will be given, but to be safe and idempotent we still need to be able to find the one that already exists. So we need selectors. We may need to combine multiple selectors to find a single object.
 
- * `address`: Used when adding config entries - filter discoveries by IP address.
- * `domain`: restricts a search by the domain of an integration - for example `hue`
- * `device`: restricts a search using the device registry. For example, a device has a serial number and that is a fairly stable identifier.
- * `class`: this can be combined with `device` to find a particular entity within a device.
+* `address`: Used when adding config entries - filter discoveries by IP address.
+* `domain`: restricts a search by the domain of an integration - for example `hue`
+* `device`: restricts a search using the device registry. For example, a device has a serial number and that is a fairly stable identifier.
+* `class`: this can be combined with `device` to find a particular entity within a device.
  
- ## Contributing
+## Q+A
+ 
+### How do I deal with secrets?
+ 
+This is a very opinionated area, so we've tried to leave it to end users. The general approach is to use templates to seperate different parts of your config. Dozens of config management tools provide way to templatize yaml, and rather than make a bad one and bake it it we suggest you chain tools. It's the unix way!
+ 
+* [ytt](https://get-ytt.io/)
+* [j2cli](https://github.com/kolypto/j2cli)
+* [gomplate](https://github.com/hairyhenderson/gomplate)
+
+## Contributing
  
 All contributions must be under the same licence and terms as contribution to a Home Assistant component. They must also meet similiar code quality checks.
  
@@ -135,20 +150,20 @@ pip install -r requirements.txt
  
 You need to make a config file with the connection details for your HA instance:
  
-```
+```bash
 cat > ~/.config/happier/config.yaml <<EOF
 default:
   host: ha.yourhost.co.uk
   port: 443
   access_token: 1234.abcd.abcedf-fffff_wwe
-  EOF
+EOF
 ```
 
 I've only tested with TLS turned on with a real certificate, so running without TLS probably won't work.
 
 You need a manifest to apply. At the moment only Area and Dashboard are working:
 
-```
+```yaml
 kind: Area
 version: v1alpha1
 name: Living Room Test
@@ -174,6 +189,6 @@ views:
 
 You can run with:
 
-```
+```bash
 python -m happier apply mainfest.yaml
 ```
