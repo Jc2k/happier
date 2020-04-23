@@ -1,0 +1,29 @@
+{
+    "type": "object",
+    "properties": {
+        "kind": {
+            "type": "string",
+            "enum": ["Dashboard"]
+        },
+        "version": {
+            "type": "string",
+            "description": "The version of the manifest. Each object is versioned so we can try to support phased migrations if we need to change the format.",
+            "enum": ["v1alpha1"]
+        },
+        "url_path": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^.*-.*$"
+        },
+        "title": {
+            "type": "string",
+            "description": "The title of the dashboard as it appears in Home Assistant",
+            "minLength": 1
+        },
+        "views": {
+            "type": "object",
+            "additionalProperties": true
+        }
+    },
+    "additionalProperties": false
+}
