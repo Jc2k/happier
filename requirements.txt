@@ -3,3 +3,4 @@ asyncws
 pyyaml
 asyncclick
 colorama
+jsonschema

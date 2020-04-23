@@ -1,5 +1,8 @@
+import pathlib
+from jsonschema.validators import validator_for
 from .registry import Registry
 import asyncclick as click
+import json
 
 short_names = {}
 long_names = {}
@@ -10,10 +13,6 @@ class Resource:
     version = None
     short_names = []
     update_policy = "create_only"
-
-    def __init__(self, connection, manifest):
-        self.connection = connection
-        self.manifest = manifest
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -34,6 +33,21 @@ class Resource:
                 raise RuntimeError(f"{cls} is a duplicate of short name {short_name}")
 
             short_names[short_name] = cls
+
+        package_root = pathlib.Path(__file__).parent.parent
+        with open(package_root / "schemas" / f"{cls.kind}.json", "r") as fp:
+            schema_data = json.load(fp)
+
+        validator_cls = validator_for(schema_data)
+        validator_cls.check_schema(schema_data)
+        cls.validator = validator_cls(schema_data)
+
+    def __init__(self, connection, manifest):
+        for error in self.validator.iter_errors(manifest):
+            raise RuntimeError(error)
+
+        self.connection = connection
+        self.manifest = manifest
 
     @classmethod
     def class_for_kind(cls, kind_or_short_name):
