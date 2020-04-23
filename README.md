@@ -1,7 +1,7 @@
 # happier
 A prototype tool for managing Home Assistant config through the command line.
 
-We are currently in the planning and prototyping stage
+We are currently in the planning and prototyping stage. Subscribe to [#9](https://github.com/Jc2k/happier/issues/9) for sporadic updates.
 
 ## What is it?
 
